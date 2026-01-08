@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const Organizer = require('../models/Organizer');
+const User = require('../models/User');
 const logger = require('../config/logger');
 
 const auth = async (req, res, next) => {
@@ -21,21 +21,25 @@ const auth = async (req, res, next) => {
       process.env.JWT_SECRET || 'fallback_secret_key_change_in_production'
     );
 
-    // Find organizer
-    const organizer = await Organizer.findById(decoded.id);
+    // Find user
+    const user = await User.findById(decoded.id);
 
-    if (!organizer) {
+    if (!user) {
       return res.status(401).json({
-        error: 'Organizer not found',
+        error: 'User not found',
       });
     }
 
-    // Attach organizer to request
-    req.organizer = {
-      id: organizer._id,
-      name: organizer.name,
-      email: organizer.email,
+    // Attach user to request
+    req.user = {
+      id: user._id,
+      role: user.role, // Attach Role
+      name: user.name,
+      email: user.email,
     };
+
+    // Backward compatibility (optional, can be removed later)
+    req.organizer = req.user;
 
     next();
   } catch (error) {

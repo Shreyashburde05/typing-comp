@@ -6,7 +6,7 @@ const CompetitionSchema = new mongoose.Schema({
   organizer: { type: String, default: 'Admin' },
   organizerId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Organizer',
+    ref: 'User',
     default: null,
   },
   status: {

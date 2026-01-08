@@ -73,8 +73,8 @@ router.post('/create', auth, validateCompetitionCreation, handleValidationErrors
       name: name.trim(),
       description: description ? description.trim() : '',
       code,
-      organizerId: req.organizer.id,
-      organizer: req.organizer.name,
+      organizerId: req.user.id,
+      organizer: req.user.name,
       rounds: rounds.map((r, index) => ({
         roundNumber: index + 1,
         text: r.text.trim(),
@@ -138,7 +138,7 @@ router.get('/competition/:code', validateCompetitionCode, handleValidationErrors
 router.get('/my-competitions', auth, async (req, res) => {
   try {
     const competitions = await Competition.find({
-      organizerId: req.organizer.id,
+      organizerId: req.user.id,
     })
       .select(
         'name code status currentRound totalRounds createdAt'

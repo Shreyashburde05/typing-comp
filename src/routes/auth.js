@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
-const Organizer = require('../models/Organizer');
+const User = require('../models/User');
 const auth = require('../middleware/auth');
 const logger = require('../config/logger');
 
@@ -59,12 +59,12 @@ const handleValidationErrors = (req, res, next) => {
    JWT TOKEN GENERATOR (RBAC READY)
 =========================== */
 
-const generateToken = (organizer) => {
+const generateToken = (user) => {
   return jwt.sign(
     {
-      id: organizer._id,
-      role: 'organizer', // 👈 RBAC FOUNDATION
-      email: organizer.email,
+      id: user._id,
+      role: user.role || 'user', // Default to user if undefined
+      email: user.email,
     },
     process.env.JWT_SECRET || 'fallback_secret_key_change_in_production',
     { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
@@ -83,37 +83,37 @@ router.post(
     try {
       const { name, email, password } = req.body;
 
-      const existingOrganizer = await Organizer.findOne({
+      const existingUser = await User.findOne({
         email: email.toLowerCase(),
       });
 
-      if (existingOrganizer) {
+      if (existingUser) {
         return res.status(400).json({
           error: 'Email already registered',
         });
       }
 
-      const organizer = new Organizer({
+      const user = new User({
         name: name.trim(),
         email: email.toLowerCase(),
         password,
-        role: 'organizer', // 👈 RBAC ROLE STORED
+        role: 'organizer',
       });
 
-      await organizer.save();
+      await user.save();
 
-      const token = generateToken(organizer);
+      const token = generateToken(user);
 
-      logger.info(`✓ New organizer registered: ${email}`);
+      logger.info(`✓ New user (organizer) registered: ${email}`);
 
       res.status(201).json({
         success: true,
         token,
         organizer: {
-          id: organizer._id,
-          name: organizer.name,
-          email: organizer.email,
-          role: 'organizer',
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
         },
       });
     } catch (error) {
@@ -137,38 +137,38 @@ router.post(
     try {
       const { email, password } = req.body;
 
-      const organizer = await Organizer.findOne({
+      const user = await User.findOne({
         email: email.toLowerCase(),
       }).select('+password');
 
-      if (!organizer) {
+      if (!user) {
         return res.status(401).json({
           error: 'Invalid email or password',
         });
       }
 
-      const isPasswordValid = await organizer.comparePassword(password);
+      const isPasswordValid = await user.comparePassword(password);
       if (!isPasswordValid) {
         return res.status(401).json({
           error: 'Invalid email or password',
         });
       }
 
-      organizer.lastLogin = new Date();
-      await organizer.save();
+      user.lastLogin = new Date();
+      await user.save();
 
-      const token = generateToken(organizer);
+      const token = generateToken(user);
 
-      logger.info(`✓ Organizer logged in: ${email}`);
+      logger.info(`✓ User logged in: ${email}`);
 
       res.json({
         success: true,
         token,
         organizer: {
-          id: organizer._id,
-          name: organizer.name,
-          email: organizer.email,
-          role: 'organizer',
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
         },
       });
     } catch (error) {
@@ -186,23 +186,23 @@ router.post(
 
 router.get('/me', auth, async (req, res) => {
   try {
-    const organizer = await Organizer.findById(req.user.id);
+    const user = await User.findById(req.user.id);
 
-    if (!organizer) {
+    if (!user) {
       return res.status(404).json({
-        error: 'Organizer not found',
+        error: 'User not found',
       });
     }
 
     res.json({
       success: true,
       organizer: {
-        id: organizer._id,
-        name: organizer.name,
-        email: organizer.email,
-        role: 'organizer',
-        createdAt: organizer.createdAt,
-        lastLogin: organizer.lastLogin,
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+        lastLogin: user.lastLogin,
       },
     });
   } catch (error) {
