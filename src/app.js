@@ -34,6 +34,7 @@ app.use(
           "'self'",
           "ws://localhost:3000",
           "http://localhost:3000",
+          "http://localhost:3001",
           "https://cdn.socket.io",
         ],
         imgSrc: ["'self'", "data:"],
@@ -60,7 +61,14 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Middleware
 app.use(compression());
-app.use(cors());
+app.use(
+  cors({
+    origin: ['http://localhost:3000', 'http://localhost:3001'], // Allow Backend & Frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(mongoSanitize());
 app.use(requestLogger);
@@ -128,7 +136,7 @@ app.use('/api/*', (req, res) => {
 app.get('*', (req, res) => {
   // Only handle HTML requests with custom 404 page
   const acceptHeader = req.headers.accept || '';
-  
+
   if (acceptHeader.includes('text/html')) {
     res.status(404).sendFile(path.join(__dirname, './public/404.html'));
   } else {
