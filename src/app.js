@@ -61,14 +61,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Middleware
 app.use(compression());
-app.use(
-  cors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'], // Allow Backend & Frontend
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-  })
-);
+// app.use(cors()); // CORS not needed for single origin
 app.use(express.json());
 app.use(mongoSanitize());
 app.use(requestLogger);
