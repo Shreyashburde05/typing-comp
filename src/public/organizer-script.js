@@ -52,7 +52,7 @@ addRoundBtn.addEventListener('click', () => {
 // Render rounds UI
 function renderRounds() {
   roundsList.innerHTML = '';
-  
+
   rounds.forEach((round, index) => {
     const roundDiv = document.createElement('div');
     roundDiv.className = 'round-item';
@@ -103,15 +103,15 @@ function removeRound(index) {
 createCompBtn.addEventListener('click', async () => {
   const compName = compNameInput.value.trim();
   const compDescription = compDescriptionInput.value.trim();
- const maxPlayersInput = document.getElementById("maxPlayers");
-const maxPlayers = maxPlayersInput && maxPlayersInput.value
-  ? parseInt(maxPlayersInput.value, 10)
-  : null;
+  const maxPlayersInput = document.getElementById("maxPlayers");
+  const maxPlayers = maxPlayersInput && maxPlayersInput.value
+    ? parseInt(maxPlayersInput.value, 10)
+    : null;
 
   if (maxPlayers !== null && (isNaN(maxPlayers) || maxPlayers < 1)) {
-  alert("Maximum players must be a number greater than 0");
-  return;
-}
+    alert("Maximum players must be a number greater than 0");
+    return;
+  }
 
 
   if (!compName) {
@@ -139,12 +139,12 @@ const maxPlayers = maxPlayersInput && maxPlayersInput.value
     const response = await fetch('/api/create', {
       method: 'POST',
       headers: getAuthHeaders(),
-    body: JSON.stringify({
-  name: compName,
-  description: compDescription,
-  rounds,
-  maxPlayers // 👈 ADD THIS
-})
+      body: JSON.stringify({
+        name: compName,
+        description: compDescription,
+        rounds,
+        maxPlayers // 👈 ADD THIS
+      })
 
     });
 
@@ -247,29 +247,29 @@ function renderRoundButtons() {
     btn.disabled = isCompleted;
     btn.style.opacity = isCompleted ? '0.5' : '1';
     btn.style.cursor = isCompleted ? 'not-allowed' : 'pointer';
-    
+
     btn.addEventListener('click', () => {
       selectedRound = index;
-      
+
       // Remove previous selection
       document.querySelectorAll('.round-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      
+
       // Update round details
-      document.getElementById('selectedRoundText').textContent = 
+      document.getElementById('selectedRoundText').textContent =
         `📄 ${round.text.substring(0, 100)}...`;
-      document.getElementById('selectedRoundTime').textContent = 
+      document.getElementById('selectedRoundTime').textContent =
         `⏱️ Duration: ${round.duration} seconds`;
-      
+
       startRoundBtn.disabled = isCompleted;
     });
 
     if (index === 0) {
       btn.classList.add('active');
       selectedRound = 0;
-      document.getElementById('selectedRoundText').textContent = 
+      document.getElementById('selectedRoundText').textContent =
         `📄 ${round.text.substring(0, 100)}...`;
-      document.getElementById('selectedRoundTime').textContent = 
+      document.getElementById('selectedRoundTime').textContent =
         `⏱️ Duration: ${round.duration} seconds`;
       startRoundBtn.disabled = false;
     }
@@ -310,17 +310,17 @@ function showRoundStatus(roundIndex) {
   const timerInterval = setInterval(() => {
     timeLeft--;
     document.getElementById('roundTimer').textContent = timeLeft;
-    
+
     const progress = ((duration - timeLeft) / duration) * 100;
     document.getElementById('progressFill').style.width = progress + '%';
 
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
       roundStatus.classList.add('hidden');
-      
+
       // Mark round as completed
       completedRounds.add(roundIndex);
-      
+
       // Disable the round button
       const roundButtons = document.querySelectorAll('.round-btn');
       if (roundButtons[roundIndex]) {
@@ -329,7 +329,7 @@ function showRoundStatus(roundIndex) {
         roundButtons[roundIndex].style.opacity = '0.5';
         roundButtons[roundIndex].style.cursor = 'not-allowed';
       }
-      
+
       // Disable start button if this round was selected
       if (selectedRound === roundIndex) {
         startRoundBtn.disabled = true;
@@ -390,7 +390,7 @@ socket.on('leaderboardUpdate', (data) => {
         <span class="leaderboard-stats">
           <span>🏃 ${item.wpm} WPM</span>
           <span>🎯 ${item.accuracy}%</span>
-          <span class="text-red">❌ ${item.errors ?? 0}</span>
+          <span class="text-red">❌ ${item.errorCount ?? 0}</span>
           <span class="text-yellow">⌫ ${item.backspaces ?? 0}</span>
         </span>
       </div>
@@ -408,7 +408,7 @@ socket.on('roundEnded', (data) => {
         <span class="leaderboard-stats">
           <span>🏃 ${item.wpm} WPM</span>
           <span>🎯 ${item.accuracy}%</span>
-          <span class="text-red">❌ ${item.errors ?? 0}</span>
+          <span class="text-red">❌ ${item.errorCount ?? 0}</span>
           <span class="text-yellow">⌫ ${item.backspaces ?? 0}</span>
         </span>
       </div>
@@ -420,16 +420,16 @@ socket.on('finalResults', (data) => {
   console.log('Final Results:', data.rankings);
   statusDisplay.textContent = 'Completed';
   statusDisplay.className = 'status-badge completed';
-  
+
   // Show export section
   exportSection.classList.remove('hidden');
-  
+
   leaderboardContainer.innerHTML = `
     <h4>🏆 Final Rankings 🏆</h4>
     ${data.rankings.map((item, index) => {
-      const medals = ['🥇', '🥈', '🥉'];
-      const medal = medals[index] || `#${index + 1}`;
-      return `
+    const medals = ['🥇', '🥈', '🥉'];
+    const medal = medals[index] || `#${index + 1}`;
+    return `
         <div class="leaderboard-item final-rank">
           <span class="medal">${medal}</span>
           <span class="leaderboard-name">${item.name}</span>
@@ -441,7 +441,7 @@ socket.on('finalResults', (data) => {
           </span>
         </div>
       `;
-    }).join('')}
+  }).join('')}
   `;
 });
 

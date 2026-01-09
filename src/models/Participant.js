@@ -20,7 +20,7 @@ const ParticipantSchema = new mongoose.Schema({
       wpm: { type: Number },
       accuracy: { type: Number },
       rank: { type: Number },
-      errors: { type: Number, default: 0 },
+      errorCount: { type: Number, default: 0 },
       backspaces: { type: Number, default: 0 },
     },
   ],

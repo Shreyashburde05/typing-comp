@@ -35,8 +35,8 @@ router.get('/:competitionId/csv', auth, async (req, res) => {
 
     // Check if competition has final rankings
     if (!competition.finalRankings || competition.finalRankings.length === 0) {
-      return res.status(400).json({ 
-        error: 'No rankings available. Competition may not be completed or has no participants.' 
+      return res.status(400).json({
+        error: 'No rankings available. Competition may not be completed or has no participants.'
       });
     }
 
@@ -63,7 +63,7 @@ router.get('/:competitionId/csv', auth, async (req, res) => {
     ];
 
     // Convert to CSV
-    const parser = new Parser({ 
+    const parser = new Parser({
       fields: ['Rank', 'Participant Name', 'Average WPM', 'Average Accuracy', 'Rounds Completed', 'Highest WPM', 'Lowest WPM']
     });
     const rankingsCSV = parser.parse(csvData);
@@ -107,8 +107,8 @@ router.get('/:competitionId/json', auth, async (req, res) => {
 
     // Check if competition has data
     if (!competition.finalRankings || competition.finalRankings.length === 0) {
-      return res.status(400).json({ 
-        error: 'No rankings available. Competition may not be completed or has no participants.' 
+      return res.status(400).json({
+        error: 'No rankings available. Competition may not be completed or has no participants.'
       });
     }
 
@@ -147,7 +147,7 @@ router.get('/:competitionId/json', auth, async (req, res) => {
           wpm: result.wpm,
           accuracy: result.accuracy,
           rank: result.rank,
-          errors: result.errors,
+          errorCount: result.errorCount,
           backspaces: result.backspaces
         }))
       })),
@@ -196,7 +196,7 @@ router.get('/:competitionId/rounds/csv', auth, async (req, res) => {
           'Accuracy': result.accuracy ? `${result.accuracy.toFixed(2)}%` : '0%',
           'Correct Chars': result.correctChars,
           'Total Chars': result.totalChars,
-          'Errors': result.errors || 0,
+          'Errors': result.errorCount || 0,
           'Backspaces': result.backspaces || 0,
           'Rank': result.rank,
           'Typing Time (s)': result.typingTime || 0

@@ -40,7 +40,7 @@ async function handleStartRound(socket, io, data, activeCompetitions) {
         totalChars: 0,
         wpm: 0,
         accuracy: 0,
-        errors: 0,
+        errorCount: 0,
         backspaces: 0,
         testStartTime: Date.now(),
       };
@@ -105,7 +105,7 @@ async function handleEndRound(
       correctChars: p.currentRoundData.correctChars || 0,
       totalChars: p.currentRoundData.totalChars || 0,
       incorrectChars: p.currentRoundData.incorrectChars || 0,
-      errors: p.currentRoundData.errors || 0,
+      errorCount: p.currentRoundData.errorCount || 0,
       backspaces: p.currentRoundData.backspaces || 0,
       typingTime: Math.round(p.currentRoundData.elapsedSeconds) || 0,
       createdAt: new Date(),
@@ -168,7 +168,7 @@ async function handleEndRound(
           wpm: roundScore.wpm,
           accuracy: roundScore.accuracy,
           rank: roundScore.rank,
-          errors: roundScore.errors || 0,
+          errorCount: roundScore.errorCount || 0,
           backspaces: roundScore.backspaces || 0,
         });
         if (!p.roundScores) p.roundScores = [];
@@ -177,7 +177,7 @@ async function handleEndRound(
           wpm: roundScore.wpm,
           accuracy: roundScore.accuracy,
           rank: roundScore.rank,
-          errors: roundScore.errors || 0,
+          errorCount: roundScore.errorCount || 0,
           backspaces: roundScore.backspaces || 0,
         });
       }
@@ -190,7 +190,7 @@ async function handleEndRound(
         name: r.participantName,
         wpm: r.wpm,
         accuracy: r.accuracy,
-        errors: r.errors || 0,
+        errorCount: r.errorCount || 0,
         backspaces: r.backspaces || 0,
         rank: r.rank,
       }));
@@ -239,7 +239,7 @@ async function handleShowFinalResults(
           scores.length > 0 ? Math.min(...scores.map((s) => s.wpm)) : 0;
         const totalErrors =
           scores.length > 0
-            ? scores.reduce((sum, s) => sum + (s.errors || 0), 0)
+            ? scores.reduce((sum, s) => sum + (s.errorCount || 0), 0)
             : 0;
         const totalBackspaces =
           scores.length > 0

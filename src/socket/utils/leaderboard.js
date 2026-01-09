@@ -18,13 +18,13 @@ function updateAndBroadcastLeaderboard(competitionId, compData, io) {
       name: p.name,
       wpm: p.currentRoundData?.wpm || 0,
       accuracy: p.currentRoundData?.accuracy || 0,
-      errors: p.currentRoundData?.errors || 0,
+      errorCount: p.currentRoundData?.errorCount || 0,
       backspaces: p.currentRoundData?.backspaces || 0,
       progress:
         totalTextLength > 0
           ? Math.round(
-              ((p.currentRoundData?.totalChars || 0) / totalTextLength) * 100
-            )
+            ((p.currentRoundData?.totalChars || 0) / totalTextLength) * 100
+          )
           : 0,
     }))
     .sort((a, b) => b.wpm - a.wpm);

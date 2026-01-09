@@ -42,7 +42,7 @@ const CompetitionSchema = new mongoose.Schema({
           correctChars: { type: Number, default: 0 },
           totalChars: { type: Number, default: 0 },
           incorrectChars: { type: Number, default: 0 },
-          errors: { type: Number, default: 0 }, // NEW
+          errorCount: { type: Number, default: 0 }, // Renamed from errors
           backspaces: { type: Number, default: 0 }, // NEW
           rank: { type: Number },
           typingTime: { type: Number, default: 0 },

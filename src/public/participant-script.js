@@ -233,7 +233,7 @@ function updateTypingStats() {
     competitionId,
     correctChars,
     totalChars,
-    errors: totalErrors,
+    errorCount: totalErrors,
     backspaces: backspaceCount,
   });
 }
@@ -420,7 +420,7 @@ socket.on('roundEnded', (data) => {
   if (personalResult) {
     document.getElementById('resultWpm').textContent = personalResult.wpm;
     document.getElementById('resultAccuracy').textContent = personalResult.accuracy + '%';
-    document.getElementById('resultErrors').textContent = personalResult.errors;
+    document.getElementById('resultErrors').textContent = personalResult.errorCount;
     document.getElementById('resultBackspaces').textContent = personalResult.backspaces;
 
     saveResultToHistory({
@@ -458,7 +458,7 @@ document
   .getElementById("clear-history-btn")
   ?.addEventListener("click", clearResultHistory);
 
-  // ====== ROLE SWITCH: PARTICIPANT → ORGANIZER ======
+// ====== ROLE SWITCH: PARTICIPANT → ORGANIZER ======
 document.addEventListener("DOMContentLoaded", () => {
   const organizerBtn = document.getElementById("organizerSwitchBtn");
 

@@ -1,7 +1,25 @@
 const request = require('supertest');
-const app = require('../src/app');
+const mongoose = require('mongoose');
+const { MongoMemoryServer } = require('mongodb-memory-server');
+
+let app;
+let mongoServer;
 
 describe('Security Middleware', () => {
+    beforeAll(async () => {
+        // 1. Start memory server
+        mongoServer = await MongoMemoryServer.create();
+        // 2. Set ENV var so app connects to it
+        process.env.MONGODB_URI = mongoServer.getUri();
+        // 3. Require app (which triggers connection)
+        app = require('../src/app');
+    });
+
+    afterAll(async () => {
+        await mongoose.disconnect();
+        await mongoServer.stop();
+    });
+
     it('should set Helmet security headers', async () => {
         const res = await request(app).get('/');
         expect(res.headers).toHaveProperty('content-security-policy');
@@ -63,6 +81,6 @@ describe('Security Middleware', () => {
 
             expect(res.statusCode).toBe(401);
             expect(res.body.error).toBe('Invalid email or password');
-        });
+        }, 15000); // Extended timeout
     });
 });

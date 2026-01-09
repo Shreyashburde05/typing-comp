@@ -3,7 +3,7 @@ const logger = require('../../config/logger');
 
 async function handleProgress(socket, io, data, activeCompetitions) {
   const { competitionId, correctChars, totalChars, errors = 0, backspaces = 0 } = data;
-  
+
   try {
     const compData = activeCompetitions.get(competitionId);
     if (!compData || !compData.roundInProgress) return;
@@ -32,7 +32,7 @@ async function handleProgress(socket, io, data, activeCompetitions) {
       incorrectChars,
       wpm,
       accuracy,
-      errors,
+      errorCount: errors,
       backspaces,
       testStartTime: startTime,
       elapsedSeconds
